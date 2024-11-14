@@ -20,12 +20,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     throw redirect("/login");
   }
 
-  const redirectPath = getRedirectPath(role);
-
-  if (redirectPath === "/") {
-    return redirect("/admin");
-  }
-  return Response.json({});
+  return redirect(getRedirectPath(role));
 };
 
 export default function Index() {

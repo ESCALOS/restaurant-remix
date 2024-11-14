@@ -64,5 +64,5 @@ const rolePaths: Record<RoleEnum, string> = {
 
 // Función para obtener la ruta de redirección basada en el rol
 export const getRedirectPath = (role: string): string => {
-  return rolePaths[role.split("_")[1] as RoleEnum] || "/";
+  return rolePaths[role.split("_")[1] as RoleEnum] || "/logout";
 };
