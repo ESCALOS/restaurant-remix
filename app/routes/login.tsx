@@ -3,9 +3,9 @@ import type {
   MetaFunction,
   LoaderFunctionArgs,
 } from "@remix-run/node";
-import { Form, json, redirect, useLoaderData } from "@remix-run/react";
-import { login, saveSession } from "services/AuthService";
-import { getRedirectPath } from "utils/auth.server";
+import { Form, redirect, useLoaderData } from "@remix-run/react";
+import { login } from "~/services/AuthService";
+import { getRedirectPath } from "~/utils/auth.server";
 import { commitSession, getSession } from "~/session.server";
 
 export const meta: MetaFunction = () => {
@@ -19,8 +19,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect(getRedirectPath(session.get("role")));
   }
 
-  const data = { error: session.get("error") };
-  return json(data, {
+  const data = { error: session.get("error") as string };
+  return Response.json(data, {
     headers: {
       "Set-Cookie": await commitSession(session),
     },

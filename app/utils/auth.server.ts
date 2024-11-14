@@ -1,5 +1,6 @@
 import { getSession, destroySession } from "~/session.server";
 import { redirect } from "@remix-run/node";
+import { RoleEnum } from "./enums/RoleEnum";
 
 const API_BASE_URL = process.env.API_BASE_URL;
 
@@ -18,6 +19,7 @@ export async function fetchWithAuth<T>(
   const headers = {
     ...options.headers,
     Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
   };
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -40,19 +42,27 @@ export async function fetchWithAuth<T>(
     });
   }
 
-  // Usa `as T` para que la respuesta sea del tipo esperado
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Error en la petición al servidor");
+  }
+
+  // Si es DELETE, devolvemos void explícitamente
+  if (options.method === "DELETE" && response.status === 204) {
+    return undefined as unknown as T; // Asegura que `deleteUser` reciba `void`
+  }
+
   return response.json() as Promise<T>;
 }
 
-export const getRedirectPath = (role: string) => {
-  switch (role) {
-    case "ROLE_ADMIN":
-      return "/admin";
-    case "ROLE_WAITER":
-      return "/waiter";
-    case "ROLE_STOREKEEPER":
-      return "/storekeeper";
-    default:
-      return "/";
-  }
+// Mapeo de roles a rutas
+const rolePaths: Record<RoleEnum, string> = {
+  [RoleEnum.ADMIN]: "/admin",
+  [RoleEnum.WAITER]: "/waiter",
+  [RoleEnum.STOREKEEPER]: "/storekeeper",
+};
+
+// Función para obtener la ruta de redirección basada en el rol
+export const getRedirectPath = (role: string): string => {
+  return rolePaths[role.split("_")[1] as RoleEnum] || "/";
 };

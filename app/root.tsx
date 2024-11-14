@@ -4,10 +4,12 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useNavigation,
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
 
 import "./tailwind.css";
+import { Toaster } from "sonner";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -23,6 +25,9 @@ export const links: LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const navigation = useNavigation();
+  const isLoading = navigation.state === "loading";
+
   return (
     <html lang="es">
       <head>
@@ -31,7 +36,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="bg-secondary-900 text-primary-100 relative">
+        <Toaster richColors position="top-center" />
+
+        {/* Rueda de carga */}
+        {isLoading && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="w-16 h-16 border-4 border-t-accent-500 border-primary-100 rounded-full animate-spin"></div>
+          </div>
+        )}
+
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -42,4 +56,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return <Outlet />;
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  console.log(error);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-secondary-900 text-primary-100">
+      <h1>Error</h1>
+      <p>Ocurrió un error</p>
+    </div>
+  );
 }
