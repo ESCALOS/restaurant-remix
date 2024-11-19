@@ -20,33 +20,32 @@ export const useUserFilter = (users: User[]) => {
 
   const [filteredUsers, setFilteredUsers] = useState<User[]>(users);
 
-  useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      const results = users.filter((user) => {
-        const matchesName = filters.name
+  const filterUsers = () => {
+    return users.filter((user) => {
+      const matches = {
+        name: filters.name
           ? user.name.toLowerCase().includes(filters.name.toLowerCase()) ||
             user.username.toLowerCase().includes(filters.name.toLowerCase())
-          : true;
-        const matchesDocument = filters.document
+          : true,
+        document: filters.document
           ? user.document_number.includes(filters.document)
-          : true;
-        const matchesDocumentType = filters.document_type
+          : true,
+        document_type: filters.document_type
           ? user.document_type === filters.document_type
-          : true;
-        const matchesRole = filters.role ? user.role === filters.role : true;
-        const matchesStatus = filters.status
+          : true,
+        role: filters.role ? user.role === filters.role : true,
+        status: filters.status
           ? (filters.status === "enabled") === user.is_enabled
-          : true;
+          : true,
+      };
 
-        return (
-          matchesName &&
-          matchesDocument &&
-          matchesDocumentType &&
-          matchesRole &&
-          matchesStatus
-        );
-      });
-      setFilteredUsers(results);
+      return Object.values(matches).every(Boolean);
+    });
+  };
+
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      setFilteredUsers(filterUsers());
     }, 250);
 
     return () => clearTimeout(delayDebounce);
