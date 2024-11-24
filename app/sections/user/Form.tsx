@@ -48,7 +48,6 @@ export default function Form({ user, onSubmit, isSubmitting }: Props) {
     register,
     handleSubmit,
     formState: { errors },
-    getValues,
   } = useForm<UserFormInputs>({
     defaultValues: {
       username: user?.username || "",
@@ -83,24 +82,21 @@ export default function Form({ user, onSubmit, isSubmitting }: Props) {
         <TextInput
           id="username"
           label="Nombre de Usuario"
-          value={getValues("username")}
-          onChange={register("username").onChange}
+          {...register("username")}
           error={errors.username?.message}
         />
 
         <TextInput
           id="name"
           label="Nombre Completo"
-          value={getValues("name")}
-          onChange={register("name").onChange}
+          {...register("name")}
           error={errors.name?.message}
         />
 
         <SelectInput
           id="document_type"
           label="Tipo de Documento"
-          value={getValues("document_type")}
-          onChange={register("document_type").onChange}
+          {...register("document_type")}
           options={[
             { value: "DNI", label: "DNI" },
             { value: "CE", label: "CE" },
@@ -112,28 +108,28 @@ export default function Form({ user, onSubmit, isSubmitting }: Props) {
         <TextInput
           id="document_number"
           label="Número de Documento"
-          value={getValues("document_number")}
-          onChange={register("document_number").onChange}
+          {...register("document_number")}
           error={errors.document_number?.message}
         />
 
         <TextInput
           id="phone"
           label="Teléfono"
-          value={getValues("phone")}
-          onChange={register("phone").onChange}
+          {...register("phone")}
           error={errors.phone?.message}
         />
 
         <SelectInput
           id="role"
           label="Rol"
-          value={getValues("role")}
-          onChange={register("role").onChange}
+          {...register("role")}
           options={[
             { value: RoleEnum.ADMIN, label: RoleEnumLabels[RoleEnum.ADMIN] },
             { value: RoleEnum.WAITER, label: RoleEnumLabels[RoleEnum.WAITER] },
-            { value: RoleEnum.STOREKEEPER, label: RoleEnumLabels[RoleEnum.STOREKEEPER] },
+            {
+              value: RoleEnum.STOREKEEPER,
+              label: RoleEnumLabels[RoleEnum.STOREKEEPER],
+            },
           ]}
           error={errors.role?.message}
         />
