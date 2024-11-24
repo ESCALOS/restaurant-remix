@@ -24,6 +24,14 @@ export const links: LinksFunction = () => [
   },
 ];
 
+function LoadingSpinner() {
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div className="w-16 h-16 border-4 border-t-accent-500 border-primary-100 rounded-full animate-spin"></div>
+    </div>
+  );
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   const navigation = useNavigation();
   const isLoading = navigation.state === "loading";
@@ -38,14 +46,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body className="bg-secondary-900 text-primary-100 relative">
         <Toaster richColors position="top-center" />
-
-        {/* Rueda de carga */}
-        {isLoading && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="w-16 h-16 border-4 border-t-accent-500 border-primary-100 rounded-full animate-spin"></div>
-          </div>
-        )}
-
+        {isLoading && <LoadingSpinner />}
         {children}
         <ScrollRestoration />
         <Scripts />

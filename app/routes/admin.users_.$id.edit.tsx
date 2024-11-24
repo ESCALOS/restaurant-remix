@@ -32,7 +32,7 @@ export const action: ActionFunction = async ({ params, request }) => {
   try {
     await updateUser(request, userData, params.id);
     return Response.json(
-      { message: "Usuario creado exitosamente" },
+      { message: "Usuario editado exitosamente" },
       { status: 201 }
     );
   } catch (error) {
@@ -47,20 +47,20 @@ export default function AdminUserEdit() {
   const { user } = useLoaderData<{ user: User }>();
   const fetcher = useFetcher<{ error: string; status: number }>();
   const isSubmitting = fetcher.state === "submitting";
-
+  const action = "edit-user";
   useEffect(() => {
-    if (fetcher.data) {
+    if (fetcher.data && fetcher.state === "idle") {
       if (fetcher.data.error) {
-        toast.error(fetcher.data.error);
+        toast.error(fetcher.data.error, { id: action });
       } else {
-        toast.success("Usuario actualizado exitosamente");
+        toast.success("Usuario actualizado exitosamente", { id: action });
         navigate("/admin/users");
       }
     }
     if (fetcher.state === "loading") {
-      toast.loading("Actualizando...");
+      toast.loading("Actualizando...", { id: action });
     }
-  }, [fetcher.data]);
+  }, [fetcher.data, fetcher.state, navigate]);
 
   const onSubmit = async (data: UserFormInputs) => {
     const formData = new FormData();

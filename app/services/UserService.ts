@@ -19,10 +19,15 @@ export const createUser = async (
   request: Request,
   data: UserRequest
 ): Promise<User> => {
-  return await fetchWithAuth<User>(request, "/users", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
+  try {
+    return await fetchWithAuth<User>(request, "/users", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  } catch (error) {
+    console.error("Error al crear usuario:", error);
+    throw error;
+  }
 };
 
 export const updateUser = async (
@@ -30,17 +35,27 @@ export const updateUser = async (
   data: UserRequest,
   id: string
 ): Promise<User> => {
-  return await fetchWithAuth<User>(request, `/users/${id}`, {
-    method: "PUT",
-    body: JSON.stringify(data),
-  });
+  try {
+    return await fetchWithAuth<User>(request, `/users/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  } catch (error) {
+    console.error("Error al actualizar usuario:", error);
+    throw error;
+  }
 };
 
 export const deleteUser = async (
   request: Request,
   id: string
 ): Promise<void> => {
-  await fetchWithAuth<void>(request, `/users/${id}`, {
-    method: "DELETE",
-  });
+  try {
+    await fetchWithAuth<void>(request, `/users/${id}`, {
+      method: "DELETE",
+    });
+  } catch (error) {
+    console.error("Error al eliminar usuario:", error);
+    throw error;
+  }
 };

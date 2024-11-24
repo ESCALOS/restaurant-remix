@@ -5,6 +5,8 @@ import { Icon } from "@iconify/react";
 import { Link } from "@remix-run/react";
 import { User } from "types";
 import { RoleEnum, RoleEnumLabels } from "~/utils/enums/RoleEnum";
+import TextInput from "~/components/TextInput";
+import SelectInput from "~/components/SelectInput";
 
 export const UserSchema = z.object({
   username: z
@@ -77,117 +79,60 @@ export default function Form({ user, onSubmit, isSubmitting }: Props) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-primary-800">
-            Nombre de Usuario
-          </label>
-          <input
-            {...register("username")}
-            className={`w-full p-3 border rounded-lg ${
-              errors.username ? "border-red-500" : "border-secondary-300"
-            }`}
-            type="text"
-          />
-          {errors.username && (
-            <p className="text-sm text-red-500">{errors.username.message}</p>
-          )}
-        </div>
+        <TextInput
+          id="username"
+          label="Nombre de Usuario"
+          {...register("username")}
+          error={errors.username?.message}
+        />
 
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-primary-800">
-            Nombre Completo
-          </label>
-          <input
-            {...register("name")}
-            className={`w-full p-3 border rounded-lg ${
-              errors.name ? "border-red-500" : "border-secondary-300"
-            }`}
-            type="text"
-          />
-          {errors.name && (
-            <p className="text-sm text-red-500">{errors.name.message}</p>
-          )}
-        </div>
+        <TextInput
+          id="name"
+          label="Nombre Completo"
+          {...register("name")}
+          error={errors.name?.message}
+        />
 
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-primary-800">
-            Tipo de Documento
-          </label>
-          <select
-            {...register("document_type")}
-            className={`w-full p-3 border rounded-lg ${
-              errors.document_type ? "border-red-500" : "border-secondary-300"
-            }`}
-          >
-            <option value="DNI">DNI</option>
-            <option value="CE">CE</option>
-            <option value="PP">PP</option>
-          </select>
-          {errors.document_type && (
-            <p className="text-sm text-red-500">
-              {errors.document_type.message}
-            </p>
-          )}
-        </div>
+        <SelectInput
+          id="document_type"
+          label="Tipo de Documento"
+          {...register("document_type")}
+          options={[
+            { value: "DNI", label: "DNI" },
+            { value: "CE", label: "CE" },
+            { value: "PP", label: "PP" },
+          ]}
+          error={errors.document_type?.message}
+        />
 
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-primary-800">
-            Número de Documento
-          </label>
-          <input
-            {...register("document_number")}
-            className={`w-full p-3 border rounded-lg ${
-              errors.document_number ? "border-red-500" : "border-secondary-300"
-            }`}
-            type="text"
-          />
-          {errors.document_number && (
-            <p className="text-sm text-red-500">
-              {errors.document_number.message}
-            </p>
-          )}
-        </div>
+        <TextInput
+          id="document_number"
+          label="Número de Documento"
+          {...register("document_number")}
+          error={errors.document_number?.message}
+        />
 
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-primary-800">
-            Teléfono
-          </label>
-          <input
-            {...register("phone")}
-            className={`w-full p-3 border rounded-lg ${
-              errors.phone ? "border-red-500" : "border-secondary-300"
-            }`}
-            type="text"
-          />
-          {errors.phone && (
-            <p className="text-sm text-red-500">{errors.phone.message}</p>
-          )}
-        </div>
+        <TextInput
+          id="phone"
+          label="Teléfono"
+          {...register("phone")}
+          error={errors.phone?.message}
+        />
 
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-primary-800">
-            Rol
-          </label>
-          <select
-            {...register("role")}
-            className={`w-full p-3 border rounded-lg ${
-              errors.role ? "border-red-500" : "border-secondary-300"
-            }`}
-          >
-            <option value={RoleEnum.ADMIN}>
-              {RoleEnumLabels[RoleEnum.ADMIN]}
-            </option>
-            <option value={RoleEnum.WAITER}>
-              {RoleEnumLabels[RoleEnum.WAITER]}
-            </option>
-            <option value={RoleEnum.STOREKEEPER}>
-              {RoleEnumLabels[RoleEnum.STOREKEEPER]}
-            </option>
-          </select>
-          {errors.role && (
-            <p className="text-sm text-red-500">{errors.role.message}</p>
-          )}
-        </div>
+        <SelectInput
+          id="role"
+          label="Rol"
+          {...register("role")}
+          options={[
+            { value: RoleEnum.ADMIN, label: RoleEnumLabels[RoleEnum.ADMIN] },
+            { value: RoleEnum.WAITER, label: RoleEnumLabels[RoleEnum.WAITER] },
+            {
+              value: RoleEnum.STOREKEEPER,
+              label: RoleEnumLabels[RoleEnum.STOREKEEPER],
+            },
+          ]}
+          error={errors.role?.message}
+        />
       </div>
 
       <button
