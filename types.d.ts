@@ -1,12 +1,15 @@
+import { DocumentTypeEnum } from "~/utils/enums/DocumentTypeEnum";
+import { RoleEnum } from "~/utils/enums/RoleEnum";
+
 export interface User {
   id: number;
   username: string;
-  document_type: "DNI" | "CE" | "PP";
+  document_type: Exclude<DocumentTypeEnum, DocumentTypeEnum.RUC>;
   document_number: string;
   name: string;
   is_enabled: boolean;
   phone: string;
-  role: "ADMIN" | "WAITER" | "STOREKEEPER";
+  role: RoleEnum;
   created_at: string;
   updated_at: string;
 }

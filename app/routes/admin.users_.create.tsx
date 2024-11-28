@@ -46,7 +46,7 @@ export default function AdminUserCreate() {
         navigate("/admin/users");
       }
     }
-  }, [fetcher.data]);
+  }, [fetcher.data, navigate]);
 
   const onSubmit = async (data: UserFormInputs) => {
     const formData = new FormData();

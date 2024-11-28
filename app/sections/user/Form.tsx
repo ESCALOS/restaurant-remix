@@ -7,15 +7,34 @@ import { User } from "types";
 import { RoleEnum, RoleEnumLabels } from "~/utils/enums/RoleEnum";
 import TextInput from "~/components/TextInput";
 import SelectInput from "~/components/SelectInput";
+import { DocumentTypeEnum } from "~/utils/enums/DocumentTypeEnum";
+
+const documentTypeEnumValues = [
+  DocumentTypeEnum.DNI,
+  DocumentTypeEnum.CE,
+  DocumentTypeEnum.PP,
+] as const;
+
+const roleEnumValues = [
+  RoleEnum.ADMIN,
+  RoleEnum.WAITER,
+  RoleEnum.STOREKEEPER,
+] as const;
 
 export const UserSchema = z.object({
   username: z
     .string()
     .min(3, "El nombre de usuario debe tener al menos 3 caracteres"),
 
-  document_type: z.enum(["DNI", "CE", "PP"], {
+  document_type: z.enum(documentTypeEnumValues, {
     required_error: "El tipo de documento es requerido",
   }),
+
+  email: z
+    .string()
+    .email("El email no es válido")
+    .min(3, "El email debe tener al menos 3 caracteres")
+    .max(15, "El email no debe exceder los 15 caracteres"),
 
   document_number: z
     .string()
@@ -29,7 +48,7 @@ export const UserSchema = z.object({
     .min(6, "El teléfono debe tener al menos 6 caracteres")
     .max(15, "El teléfono no debe exceder los 15 caracteres"),
 
-  role: z.enum(["ADMIN", "WAITER", "STOREKEEPER"], {
+  role: z.enum(roleEnumValues, {
     required_error: "El rol es requerido",
   }),
 });
@@ -52,10 +71,10 @@ export default function Form({ user, onSubmit, isSubmitting }: Props) {
     defaultValues: {
       username: user?.username || "",
       document_number: user?.document_number || "",
-      document_type: user?.document_type || "DNI",
+      document_type: user?.document_type || DocumentTypeEnum.DNI,
       name: user?.name || "",
       phone: user?.phone || "",
-      role: user?.role || "WAITER",
+      role: user?.role || RoleEnum.WAITER,
     },
 
     resolver: zodResolver(UserSchema),
@@ -79,6 +98,15 @@ export default function Form({ user, onSubmit, isSubmitting }: Props) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="md:col-span-2">
+          <TextInput
+            id="name"
+            label="Nombre Completo"
+            {...register("name")}
+            error={errors.name?.message}
+          />
+        </div>
+
         <TextInput
           id="username"
           label="Nombre de Usuario"
@@ -87,10 +115,10 @@ export default function Form({ user, onSubmit, isSubmitting }: Props) {
         />
 
         <TextInput
-          id="name"
-          label="Nombre Completo"
-          {...register("name")}
-          error={errors.name?.message}
+          id="email"
+          label="Email"
+          {...register("email")}
+          error={errors.email?.message}
         />
 
         <SelectInput
