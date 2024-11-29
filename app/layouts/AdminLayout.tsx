@@ -1,8 +1,8 @@
-import { Link, NavLink } from "@remix-run/react";
+import { Link } from "@remix-run/react";
 import { useState } from "react";
-import { MenuIcon, UserIcon, DashboardIcon, UsersIcon, TablesIcon, CategoriesIcon, ProductsIcon, DishesIcon, StockIcon, ReportsIcon } from "./components/Icons";
 import UserMenu from "./components/UserMenu";
 import Sidebar from "./components/Sidebar";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 interface Props {
   children: React.ReactNode;
@@ -22,7 +22,7 @@ export default function AdminLayout({ children }: Props) {
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="mr-4 rounded p-1 text-primary-100 hover:bg-primary-700 lg:hidden"
             >
-              <MenuIcon />
+              <Icon icon="mdi:menu" width={24} height={24} />
             </button>
             <Link to="/admin" className="flex items-center">
               <img
@@ -40,7 +40,7 @@ export default function AdminLayout({ children }: Props) {
               onClick={() => setUserMenuOpen(!userMenuOpen)}
               className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-600 text-white hover:bg-primary-700"
             >
-              <UserIcon />
+              <Icon icon="mdi:account" width={24} height={24} />
             </button>
             {userMenuOpen && <UserMenu />}
           </div>
@@ -49,10 +49,10 @@ export default function AdminLayout({ children }: Props) {
 
       {/* Overlay */}
       {sidebarOpen && (
-        <div
+        <button
           className="fixed inset-0 z-40 bg-black bg-opacity-50 transition-opacity lg:hidden"
           onClick={() => setSidebarOpen(false)}
-        ></div>
+        ></button>
       )}
 
       {/* Sidebar */}
@@ -65,14 +65,3 @@ export default function AdminLayout({ children }: Props) {
     </div>
   );
 }
-
-const navItems = [
-  { name: "Panel", path: "/admin/dashboard", icon: <DashboardIcon /> },
-  { name: "Usuarios", path: "/admin/users", icon: <UsersIcon /> },
-  { name: "Mesas", path: "/admin/tables", icon: <TablesIcon /> },
-  { name: "Categorías", path: "/admin/categories", icon: <CategoriesIcon /> },
-  { name: "Productos", path: "/admin/products", icon: <ProductsIcon /> },
-  { name: "Platos", path: "/admin/dishes", icon: <DishesIcon /> },
-  { name: "Stock", path: "/admin/stock", icon: <StockIcon /> },
-  { name: "Reportes", path: "/admin/reports", icon: <ReportsIcon /> },
-];
