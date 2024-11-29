@@ -4,7 +4,6 @@ export enum DocumentTypeEnum {
   CE = "CE",
   PP = "PP",
 }
-// Colores y etiquetas para los tipos de documento
 export const DocumentTypeEnumLabels: Record<DocumentTypeEnum, string> = {
   [DocumentTypeEnum.RUC]: "Registro Único de Contribuyente",
   [DocumentTypeEnum.DNI]: "Documento Nacional de Identidad",
@@ -13,8 +12,8 @@ export const DocumentTypeEnumLabels: Record<DocumentTypeEnum, string> = {
 };
 
 export const DocumentTypeEnumColors: Record<DocumentTypeEnum, string> = {
-  [DocumentTypeEnum.RUC]: "bg-green-500 text-white",
-  [DocumentTypeEnum.DNI]: "bg-blue-500 text-white",
-  [DocumentTypeEnum.CE]: "bg-yellow-500 text-black",
-  [DocumentTypeEnum.PP]: "bg-purple-500 text-white",
+  [DocumentTypeEnum.RUC]: "bg-emerald-500 text-white",
+  [DocumentTypeEnum.DNI]: "bg-indigo-500 text-white",
+  [DocumentTypeEnum.CE]: "bg-amber-500 text-white",
+  [DocumentTypeEnum.PP]: "bg-fuchsia-500 text-white",
 };

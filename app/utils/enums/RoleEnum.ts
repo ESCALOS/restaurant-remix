@@ -5,8 +5,6 @@ export enum RoleEnum {
   STOREKEEPER = "STOREKEEPER",
 }
 
-export const RoleEnumValues = Object.values(RoleEnum);
-
 export const RoleEnumLabels: Record<RoleEnum, string> = {
   [RoleEnum.ADMIN]: "Administrador",
   [RoleEnum.WAITER]: "Mozo",

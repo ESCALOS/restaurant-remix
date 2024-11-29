@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 
 type SelectInputProps = {
   label: string;
-  options: { value: string; label: string }[];
+  options: { value: string | number; label: string }[];
   error?: string;
 } & React.SelectHTMLAttributes<HTMLSelectElement>;
 

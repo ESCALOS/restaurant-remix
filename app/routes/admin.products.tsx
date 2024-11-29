@@ -3,23 +3,23 @@ import { LoaderFunction } from "@remix-run/node";
 import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { Table as TableType } from "types";
-import Table from "~/sections/table/Table";
-import { getTables } from "~/services/TableService";
+import { Product as ProductType } from "types";
+import Table from "~/sections/product/Table";
+import { getProducts } from "~/services/ProductService";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const tables = await getTables(request);
-  return Response.json(tables);
+  const products = await getProducts(request);
+  return Response.json(products);
 };
 
-export default function AdminTables() {
-  const tables = useLoaderData<TableType[]>();
+export default function AdminProducts() {
+  const products = useLoaderData<ProductType[]>();
   const fetcher = useFetcher<{ error: string; status: number }>();
 
-  const deleteTable = async (id: string) => {
+  const deleteProduct = async (id: string) => {
     await fetcher.submit(null, {
       method: "delete",
-      action: `/admin/tables/${id}/destroy`,
+      action: `/admin/products/${id}/destroy`,
     });
   };
 
@@ -27,17 +27,17 @@ export default function AdminTables() {
     if (fetcher.data) {
       if (fetcher.data.error) {
         toast.error(fetcher.data.error, {
-          id: "delete-table",
+          id: "delete-product",
         });
       } else {
-        toast.success("Tabla eliminada exitosamente", {
-          id: "delete-table",
+        toast.success("Producto eliminado exitosamente", {
+          id: "delete-product",
         });
       }
     }
     if (fetcher.state === "submitting") {
       toast.loading("Eliminando...", {
-        id: "delete-table",
+        id: "delete-product",
       });
     }
   }, [fetcher]);
@@ -46,16 +46,16 @@ export default function AdminTables() {
     <div className="rounded-lg bg-white p-6 shadow-md">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-primary-900">
-          Gestión de Mesas
+          Gestión de Productos
         </h1>
         <Link
-          to="/admin/tables/create"
+          to="/admin/products/create"
           className="rounded-lg bg-accent-500 px-4 py-2 text-sm font-medium text-white hover:bg-accent-600"
         >
-          <Icon icon="tabler:table-plus" width="24" height="24" />
+          <Icon icon="tabler:cube-plus" width="24" height="24" />
         </Link>
       </div>
-      <Table tables={tables} onDelete={deleteTable} />
+      <Table products={products} onDelete={deleteProduct} />
     </div>
   );
 }

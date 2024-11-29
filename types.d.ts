@@ -7,6 +7,7 @@ export interface User {
   document_type: Exclude<DocumentTypeEnum, DocumentTypeEnum.RUC>;
   document_number: string;
   name: string;
+  email: string;
   is_enabled: boolean;
   phone: string;
   role: RoleEnum;

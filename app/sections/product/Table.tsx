@@ -1,69 +1,69 @@
-import { User } from "types";
-import { RoleEnumColors, RoleEnumLabels } from "~/utils/enums/RoleEnum";
-import { useNavigate } from "@remix-run/react";
+import { Product } from "types";
 import TableHeader from "~/components/TableHeader";
 import IconButton from "~/components/IconButton";
+import { useNavigate } from "@remix-run/react";
 import { Badge } from "~/components/Badge";
-import { DocumentTypeEnumColors } from "~/utils/enums/DocumentTypeEnum";
 
 export default function Table({
-  users,
+  products,
   onDelete,
 }: {
-  users: User[];
+  products: Product[];
   onDelete: (id: string) => void;
 }) {
+  const navigate = useNavigate();
+
   const columns = [
     "Nombre",
-    "Usuario",
-    "Documento",
-    "Celular",
-    "Rol",
-    "Estado",
+    "Descripción",
+    "Precio",
+    "Categoría",
+    "Stock",
+    "Stock mínimo",
     "Acciones",
   ];
-
-  const navigate = useNavigate();
 
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
         <TableHeader columns={columns} />
         <tbody className="divide-y divide-gray-200 bg-white">
-          {users.map((user) => (
-            <tr key={user.id}>
+          {products.map((product) => (
+            <tr key={product.id}>
               <td className="text-sm font-medium text-primary-900">
-                {user.name}
+                {product.name}
               </td>
-              <td className="text-sm text-primary-900">{user.username}</td>
               <td className="text-sm text-primary-900">
-                <Badge className={DocumentTypeEnumColors[user.document_type]}>
-                  {user.document_type} - {user.document_number}
-                </Badge>
+                {product.description}
               </td>
-              <td className="text-sm text-primary-900">{user.phone}</td>
-              <td>
-                <Badge className={RoleEnumColors[user.role]}>
-                  {RoleEnumLabels[user.role]}
-                </Badge>
+              <td className="text-sm text-primary-900">
+                S/. {product.price.toFixed(2)}
+              </td>
+              <td className="text-sm text-primary-900">
+                {product.category.name}
               </td>
               <td>
-                <Badge variant={user.is_enabled ? "success" : "danger"}>
-                  {user.is_enabled ? "Activo" : "Inactivo"}
+                <Badge
+                  variant={
+                    product.min_stock <= product.stock ? "success" : "danger"
+                  }
+                >
+                  {product.stock}
                 </Badge>
               </td>
+              <td className="text-sm text-primary-900">{product.min_stock}</td>
               <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
                 <IconButton
                   icon="tabler:pencil"
                   color="accent"
-                  onClick={() => navigate(`/admin/users/${user.id}/edit`)}
+                  onClick={() => navigate(`/admin/products/${product.id}/edit`)}
                   className="mr-2"
                 />
                 <IconButton
                   className="ml-2"
                   icon="tabler:trash"
                   color="red"
-                  onClick={() => onDelete(user.id.toString())}
+                  onClick={() => onDelete(product.id.toString())}
                 />
               </td>
             </tr>

@@ -33,8 +33,7 @@ export const UserSchema = z.object({
   email: z
     .string()
     .email("El email no es válido")
-    .min(3, "El email debe tener al menos 3 caracteres")
-    .max(15, "El email no debe exceder los 15 caracteres"),
+    .min(3, "El email debe tener al menos 3 caracteres"),
 
   document_number: z
     .string()
@@ -73,6 +72,7 @@ export default function Form({ user, onSubmit, isSubmitting }: Props) {
       document_number: user?.document_number || "",
       document_type: user?.document_type || DocumentTypeEnum.DNI,
       name: user?.name || "",
+      email: user?.email || "",
       phone: user?.phone || "",
       role: user?.role || RoleEnum.WAITER,
     },
