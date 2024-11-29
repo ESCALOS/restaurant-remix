@@ -1,7 +1,9 @@
 import { Dish } from "types";
 import { fetchWithAuth } from "~/utils/auth.server";
 
-type DishRequest = Omit<Dish, "id">;
+type DishRequest = Omit<Dish, "id" | "category"> & {
+  category_id: number;
+};
 
 export const getDishes = async (request: Request): Promise<Dish[]> => {
   return await fetchWithAuth<Dish[]>(request, "/dishes");

@@ -55,14 +55,13 @@ export default function Table({
               <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
                 <IconButton
                   icon="tabler:pencil"
-                  color="accent"
                   onClick={() => navigate(`/admin/users/${user.id}/edit`)}
                   className="mr-2"
                 />
                 <IconButton
                   className="ml-2"
                   icon="tabler:trash"
-                  color="red"
+                  variant="danger"
                   onClick={() => onDelete(user.id.toString())}
                 />
               </td>
