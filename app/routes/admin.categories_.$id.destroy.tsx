@@ -1,13 +1,20 @@
-import { ActionFunctionArgs } from "@remix-run/node";
-import invariant from "tiny-invariant";
+import { ActionFunction } from "@remix-run/node";
 import { deleteCategory } from "~/services/CategoryService";
 
-export const action = async ({ params, request }: ActionFunctionArgs) => {
-  invariant(params.id, "No se ha proporcionado el id de la categoría");
-  const categoryId = params.id;
+export const action: ActionFunction = async ({ request, params }) => {
+  const { id } = params;
+
+  if (!id) {
+    return Response.json(
+      { error: "ID de la categoría no proporcionado" },
+      { status: 400 }
+    );
+  }
 
   try {
-    await deleteCategory(request, categoryId);
+    await deleteCategory(request, parseInt(id));
+    console.log("Categoría eliminada");
+
     return Response.json(
       { message: "Categoría eliminada exitosamente" },
       { status: 200 }

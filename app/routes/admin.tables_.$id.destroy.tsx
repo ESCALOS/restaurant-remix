@@ -1,13 +1,20 @@
-import { ActionFunctionArgs } from "@remix-run/node";
-import invariant from "tiny-invariant";
+import { ActionFunction } from "@remix-run/node";
 import { deleteTable } from "~/services/TableService";
 
-export const action = async ({ params, request }: ActionFunctionArgs) => {
-  invariant(params.id, "No se ha proporcionado el id de la mesa");
-  const tableId = params.id;
+export const action: ActionFunction = async ({ request, params }) => {
+  const { id } = params;
+
+  if (!id) {
+    return Response.json(
+      { error: "ID de la mesa no proporcionado" },
+      { status: 400 }
+    );
+  }
 
   try {
-    await deleteTable(request, tableId);
+    await deleteTable(request, parseInt(id));
+    console.log("Mesa eliminada");
+
     return Response.json(
       { message: "Mesa eliminada exitosamente" },
       { status: 200 }

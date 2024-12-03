@@ -1,10 +1,11 @@
 import { ActionFunction } from "@remix-run/node";
-import { useNavigate } from "@remix-run/react";
-import { useEffect } from "react";
-import { useFetcher } from "react-router-dom";
-import { toast } from "sonner";
-import Form, { TableFormInputs, TableSchema } from "~/sections/table/Form";
+import { z } from "zod";
 import { createTable } from "~/services/TableService";
+
+// Esquema de validación para los datos de la mesa
+const TableSchema = z.object({
+  number: z.string().min(1, "El número de la mesa es obligatorio"),
+});
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
@@ -17,48 +18,20 @@ export const action: ActionFunction = async ({ request }) => {
     );
   }
 
-  const tableData = parsedData.data;
+  const { number } = parsedData.data;
 
   try {
-    await createTable(request, tableData);
+    // Crear mesa
+    const newTable = await createTable(request, { number });
     return Response.json(
-      { message: "Mesa creada exitosamente" },
+      { message: "Mesa creada exitosamente", table: newTable },
       { status: 201 }
     );
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Error desconocido";
+    console.log("Error al crear la mesa", error);
+
     return Response.json({ error: errorMessage }, { status: 500 });
   }
 };
-
-export default function AdminTableCreate() {
-  const navigate = useNavigate();
-
-  const fetcher = useFetcher<{ error: string; status: number }>();
-  const isSubmitting = fetcher.state === "submitting";
-
-  useEffect(() => {
-    if (fetcher.data) {
-      if (fetcher.data.error) {
-        toast.error(fetcher.data.error);
-      } else {
-        toast.success("Mesa creada exitosamente");
-        navigate("/admin/tables");
-      }
-    }
-  }, [fetcher.data, navigate]);
-
-  const onSubmit = async (data: TableFormInputs) => {
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, value as string);
-    });
-
-    fetcher.submit(formData, {
-      method: "post",
-    });
-  };
-
-  return <Form onSubmit={onSubmit} isSubmitting={isSubmitting} />;
-}

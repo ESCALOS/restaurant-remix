@@ -1,46 +1,25 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
 import { LoaderFunction } from "@remix-run/node";
-import { Link, useFetcher, useLoaderData } from "@remix-run/react";
-import { useEffect } from "react";
-import { toast } from "sonner";
-import { Category as CategoryType } from "types";
-import Table from "~/sections/category/Table";
+import { useLoaderData } from "@remix-run/react";
 import { getCategories } from "~/services/CategoryService";
+import { Category as CategoryType } from "types";
+import { useCategoryStore } from "~/store/categoryStore";
+import { useEffect } from "react";
+import CategoryCard from "~/sections/category/Card";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const categories = await getCategories(request);
   return Response.json(categories);
 };
 
-export default function AdminCategories() {
-  const categories = useLoaderData<CategoryType[]>();
-  const fetcher = useFetcher<{ error: string; status: number }>();
+export default function AdminCategoriesPage() {
+  const loadCategories = useLoaderData<CategoryType[]>();
 
-  const deleteCategory = async (id: string) => {
-    await fetcher.submit(null, {
-      method: "delete",
-      action: `/admin/categories/${id}/destroy`,
-    });
-  };
+  const { categories, setInitialCategories, addCategory } = useCategoryStore();
 
   useEffect(() => {
-    if (fetcher.data) {
-      if (fetcher.data.error) {
-        toast.error(fetcher.data.error, {
-          id: "delete-category",
-        });
-      } else {
-        toast.success("Categoría eliminada exitosamente", {
-          id: "delete-category",
-        });
-      }
-    }
-    if (fetcher.state === "submitting") {
-      toast.loading("Eliminando...", {
-        id: "delete-category",
-      });
-    }
-  }, [fetcher]);
+    setInitialCategories(loadCategories);
+  }, []);
 
   return (
     <div className="rounded-lg bg-white p-6 shadow-md">
@@ -48,14 +27,18 @@ export default function AdminCategories() {
         <h1 className="text-2xl font-bold text-primary-900">
           Gestión de Categorías
         </h1>
-        <Link
-          to="/admin/categories/create"
+        <button
           className="rounded-lg bg-accent-500 px-4 py-2 text-sm font-medium text-white hover:bg-accent-600"
+          onClick={addCategory}
         >
           <Icon icon="tabler:category-plus" width="24" height="24" />
-        </Link>
+        </button>
       </div>
-      <Table categories={categories} onDelete={deleteCategory} />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+        {categories.map((category) => (
+          <CategoryCard key={category.id} category={category} />
+        ))}
+      </div>
     </div>
   );
 }

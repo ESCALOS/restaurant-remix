@@ -1,46 +1,25 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
 import { LoaderFunction } from "@remix-run/node";
-import { Link, useFetcher, useLoaderData } from "@remix-run/react";
-import { useEffect } from "react";
-import { toast } from "sonner";
-import { Table as TableType } from "types";
-import Table from "~/sections/table/Table";
+import { useLoaderData } from "@remix-run/react";
 import { getTables } from "~/services/TableService";
+import { Table as TableType } from "types";
+import { useTableStore } from "~/store/tableStore";
+import { useEffect } from "react";
+import TableCard from "~/sections/table/Card";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const tables = await getTables(request);
   return Response.json(tables);
 };
 
-export default function AdminTables() {
-  const tables = useLoaderData<TableType[]>();
-  const fetcher = useFetcher<{ error: string; status: number }>();
+export default function AdminTablesPage() {
+  const loadTables = useLoaderData<TableType[]>();
 
-  const deleteTable = async (id: string) => {
-    await fetcher.submit(null, {
-      method: "delete",
-      action: `/admin/tables/${id}/destroy`,
-    });
-  };
+  const { tables, setInitialTables, addTable } = useTableStore();
 
   useEffect(() => {
-    if (fetcher.data) {
-      if (fetcher.data.error) {
-        toast.error(fetcher.data.error, {
-          id: "delete-table",
-        });
-      } else {
-        toast.success("Tabla eliminada exitosamente", {
-          id: "delete-table",
-        });
-      }
-    }
-    if (fetcher.state === "submitting") {
-      toast.loading("Eliminando...", {
-        id: "delete-table",
-      });
-    }
-  }, [fetcher]);
+    setInitialTables(loadTables);
+  }, []);
 
   return (
     <div className="rounded-lg bg-white p-6 shadow-md">
@@ -48,14 +27,18 @@ export default function AdminTables() {
         <h1 className="text-2xl font-bold text-primary-900">
           Gestión de Mesas
         </h1>
-        <Link
-          to="/admin/tables/create"
+        <button
           className="rounded-lg bg-accent-500 px-4 py-2 text-sm font-medium text-white hover:bg-accent-600"
+          onClick={addTable}
         >
           <Icon icon="tabler:table-plus" width="24" height="24" />
-        </Link>
+        </button>
       </div>
-      <Table tables={tables} onDelete={deleteTable} />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+        {tables.map((table) => (
+          <TableCard key={table.id} table={table} />
+        ))}
+      </div>
     </div>
   );
 }

@@ -6,12 +6,13 @@ import {
   ScrollRestoration,
   useNavigation,
 } from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/node";
+import { Toaster } from "sonner";
+import { useLoadingStore } from "./store/loadingStore"; // Importa el store de zustand
 
 import "./tailwind.css";
-import { Toaster } from "sonner";
+import { useEffect } from "react";
 
-export const links: LinksFunction = () => [
+export const links = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
@@ -34,7 +35,16 @@ function LoadingSpinner() {
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const navigation = useNavigation();
-  const isLoading = navigation.state === "loading";
+  const { isLoading, setLoading } = useLoadingStore(); // Utiliza el estado global de carga
+
+  useEffect(() => {
+    // Monitorea el estado de la navegación y actualiza el estado global de carga
+    if (navigation.state === "loading") {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [navigation.state]);
 
   return (
     <html lang="es">
@@ -46,7 +56,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body className="bg-secondary-900 text-primary-100 relative">
         <Toaster richColors position="top-center" />
-        {isLoading && <LoadingSpinner />}
+        {isLoading && <LoadingSpinner />}{" "}
+        {/* Muestra el LoadingSpinner solo cuando isLoading es true */}
         {children}
         <ScrollRestoration />
         <Scripts />
