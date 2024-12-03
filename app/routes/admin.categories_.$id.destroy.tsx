@@ -20,6 +20,8 @@ export const action: ActionFunction = async ({ request, params }) => {
       { status: 200 }
     );
   } catch (error) {
+    console.log(error);
+
     const errorMessage =
       error instanceof Error ? error.message : "Error desconocido";
     return Response.json({ error: errorMessage }, { status: 500 });

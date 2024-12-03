@@ -6,6 +6,7 @@ import { useCategoryStore } from "~/store/categoryStore";
 import { useEffect } from "react";
 import CategoryCard from "~/sections/category/Card";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const categories = await getCategories(request);
@@ -16,6 +17,7 @@ export default function AdminCategoriesPage() {
   const loadCategories = useLoaderData<CategoryType[]>();
 
   const { categories, setInitialCategories, addCategory } = useCategoryStore();
+  const [parents] = useAutoAnimate();
 
   useEffect(() => {
     setInitialCategories(loadCategories);
@@ -34,7 +36,7 @@ export default function AdminCategoriesPage() {
           <Icon icon="tabler:category-plus" width="24" height="24" />
         </button>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4" ref={parents}>
         {categories.map((category) => (
           <CategoryCard key={category.id} category={category} />
         ))}

@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { useCategoryStore } from "~/store/categoryStore";
 import { Category as CategoryType } from "types";
 import { useLoadingStore } from "~/store/loadingStore";
+import { motion } from "framer-motion";
+import { useErrorAnimation } from "~/hooks/useErrorAnimation";
 
 interface CategoryCardProps {
   category: CategoryType & { is_persistent: boolean };
@@ -21,6 +23,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
   const [name, setName] = React.useState(category.name);
   const inputRef = useRef<HTMLInputElement>(null);
   const setLoading = useLoadingStore((state) => state.setLoading);
+  const { controls, errorAnimation } = useErrorAnimation();
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -37,6 +40,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
       if (fetcher.data.error) {
         toast.warning(fetcher.data.error);
         inputRef.current?.focus(); // Autofocus al input
+        errorAnimation();
         return;
       }
       if (fetcher.data.category) {
@@ -51,9 +55,19 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
     }
   }, [fetcher.data, updateCategory]);
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Escape") {
+      if (!category.is_persistent) {
+        deleteCategory(category.id);
+      }
+      setIsEditing(false);
+    }
+  };
+
   const handleSave = async () => {
     if (name.trim() === "") {
       toast.error("El nombre de la categoría no puede estar vacío");
+      await errorAnimation();
       return;
     }
 
@@ -77,7 +91,8 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
   };
 
   return (
-    <div
+    <motion.div
+      animate={controls}
       className="p-4 border rounded shadow hover:shadow-md transition select-none"
       onDoubleClick={() => setIsEditing(true)}
     >
@@ -94,6 +109,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              onKeyDown={handleKeyDown}
               className="border px-2 py-1 rounded w-full"
             />
           </form>
@@ -121,7 +137,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
               ) : (
                 <button
                   className="text-red-500 hover:text-red-600"
-                  onClick={handleDelete}
+                  onClick={() => deleteCategory(category.id)}
                 >
                   <Icon className="h-5 w-5" icon="tabler:trash" />
                 </button>
@@ -145,7 +161,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

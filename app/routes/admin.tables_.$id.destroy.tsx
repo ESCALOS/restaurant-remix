@@ -13,7 +13,6 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   try {
     await deleteTable(request, parseInt(id));
-    console.log("Mesa eliminada");
 
     return Response.json(
       { message: "Mesa eliminada exitosamente" },
