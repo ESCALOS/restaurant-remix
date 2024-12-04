@@ -6,6 +6,7 @@ import { useTableStore } from "~/store/tableStore";
 import { useEffect } from "react";
 import TableCard from "~/sections/table/Card";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const tables = await getTables(request);
@@ -14,8 +15,8 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function AdminTablesPage() {
   const loadTables = useLoaderData<TableType[]>();
-
   const { tables, setInitialTables, addTable } = useTableStore();
+  const [parents] = useAutoAnimate();
 
   useEffect(() => {
     setInitialTables(loadTables);
@@ -34,7 +35,7 @@ export default function AdminTablesPage() {
           <Icon icon="tabler:table-plus" width="24" height="24" />
         </button>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4" ref={parents}>
         {tables.map((table) => (
           <TableCard key={table.id} table={table} />
         ))}

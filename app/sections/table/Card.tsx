@@ -4,6 +4,9 @@ import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import { useTableStore } from "~/store/tableStore";
 import { Table as TableType } from "types";
+import { useLoadingStore } from "~/store/loadingStore";
+import { useErrorAnimation } from "~/hooks/useErrorAnimation";
+import { motion } from "framer-motion";
 
 interface TableCardProps {
   table: TableType & { is_persistent: boolean };
@@ -18,11 +21,18 @@ const TableCard: React.FC<TableCardProps> = ({ table }) => {
   const { updateTable, deleteTable } = useTableStore();
   const [isEditing, setIsEditing] = React.useState(!table.is_persistent);
   const [number, setNumber] = React.useState(table.number);
+  const setLoading = useLoadingStore((state) => state.setLoading);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { controls, errorAnimation } = useErrorAnimation();
+  const previousNumberRef = useRef(table.number);
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus(); // Autofocus al input
+    }
+
+    if (!isEditing && number.trim() === "") {
+      setNumber(table.number);
     }
   }, [isEditing]);
 
@@ -31,6 +41,7 @@ const TableCard: React.FC<TableCardProps> = ({ table }) => {
       if (fetcher.data.error) {
         toast.warning(fetcher.data.error);
         inputRef.current?.focus(); // Autofocus al input
+        errorAnimation();
         return;
       }
       if (fetcher.data.table) {
@@ -42,7 +53,21 @@ const TableCard: React.FC<TableCardProps> = ({ table }) => {
     }
   }, [fetcher.data, updateTable]);
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Escape") {
+      if (!table.is_persistent) {
+        deleteTable(table.id);
+      }
+      setIsEditing(false);
+    }
+  };
+
   const handleSave = async () => {
+    if (number === previousNumberRef.current) {
+      setIsEditing(false);
+      return;
+    }
+
     if (number.trim() === "") {
       toast.error("El número de la mesa no puede estar vacío");
       return;
@@ -51,19 +76,26 @@ const TableCard: React.FC<TableCardProps> = ({ table }) => {
     const action = !table.is_persistent
       ? "/admin/tables/create"
       : `/admin/tables/${table.id}/edit`;
+
+    setLoading(true);
     await fetcher.submit({ number }, { method: "post", action });
+    setLoading(false);
+    previousNumberRef.current = number;
   };
 
   const handleDelete = async () => {
+    setLoading(true);
     await fetcher.submit(null, {
       method: "delete",
       action: `/admin/tables/${table.id}/destroy`,
     });
+    setLoading(false);
     deleteTable(table.id);
   };
 
   return (
-    <div
+    <motion.div
+      animate={controls}
       className="p-4 border rounded shadow hover:shadow-md transition select-none"
       onDoubleClick={() => setIsEditing(true)}
     >
@@ -81,6 +113,7 @@ const TableCard: React.FC<TableCardProps> = ({ table }) => {
               value={number}
               onChange={(e) => setNumber(e.target.value)}
               className="border px-2 py-1 rounded w-full"
+              onKeyDown={handleKeyDown}
             />
           </form>
         ) : (
@@ -133,7 +166,7 @@ const TableCard: React.FC<TableCardProps> = ({ table }) => {
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
