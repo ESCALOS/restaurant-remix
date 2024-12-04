@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useFetcher } from "@remix-run/react";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
@@ -24,6 +24,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const setLoading = useLoadingStore((state) => state.setLoading);
   const { controls, errorAnimation } = useErrorAnimation();
+  const previousNameRef = useRef("");
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -35,36 +36,46 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
     }
   }, [isEditing]);
 
-  useEffect(() => {
-    if (fetcher.data) {
-      if (fetcher.data.error) {
-        toast.warning(fetcher.data.error);
-        inputRef.current?.focus(); // Autofocus al input
-        errorAnimation();
-        return;
-      }
-      if (fetcher.data.category) {
-        updateCategory(
-          { is_persistent: true, ...fetcher.data.category },
-          category.id
-        );
-        toast.success(fetcher.data.message);
-        setIsEditing(false);
-        return;
-      }
+  const onUpdateFetchData = useCallback(() => {
+    if (fetcher.data?.error) {
+      toast.warning(fetcher.data.error);
+      inputRef.current?.focus(); // Autofocus al input
+      errorAnimation();
+      return;
     }
-  }, [fetcher.data, updateCategory]);
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Escape") {
-      if (!category.is_persistent) {
-        deleteCategory(category.id);
-      }
+    if (fetcher.data?.category) {
+      updateCategory(
+        { is_persistent: true, ...fetcher.data.category },
+        category.id
+      );
+      toast.success(fetcher.data.message);
       setIsEditing(false);
+      return;
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (fetcher.data) onUpdateFetchData();
+  }, [fetcher.data, onUpdateFetchData]);
+
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === "Escape") {
+        if (!category.is_persistent) {
+          deleteCategory(category.id);
+        }
+        setIsEditing(false);
+      }
+    },
+    []
+  );
 
   const handleSave = async () => {
+    if (name === previousNameRef.current) {
+      setIsEditing(false);
+      return;
+    }
+
     if (name.trim() === "") {
       toast.error("El nombre de la categoría no puede estar vacío");
       await errorAnimation();
@@ -78,6 +89,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
     setLoading(true);
     await fetcher.submit({ name }, { method: "post", action });
     setLoading(false);
+    previousNameRef.current = name;
   };
 
   const handleDelete = async () => {
