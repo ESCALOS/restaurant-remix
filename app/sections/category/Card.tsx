@@ -43,7 +43,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
         inputRef.current?.focus(); // Autofocus al input
         return;
       }
-      if (fetcher.data.category) {
+      if (fetcher.data?.category) {
         updateCategory(
           { is_persistent: true, ...fetcher.data.category },
           category.id

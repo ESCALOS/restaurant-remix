@@ -15,7 +15,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function AdminTablesPage() {
   const loadTables = useLoaderData<TableType[]>();
-
   const { tables, setInitialTables, addTable } = useTableStore();
   const [parents] = useAutoAnimate();
 
