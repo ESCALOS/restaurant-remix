@@ -39,8 +39,6 @@ export const useCategoryStore = create<CategoryStore>((set) => ({
       categories: state.categories.map((category) =>
         category.id === oldId ? { ...updatedCategory } : category
       ),
-      lastId:
-        updatedCategory.id > state.lastId ? updatedCategory.id : state.lastId,
     })),
   deleteCategory: (id) =>
     set((state) => ({

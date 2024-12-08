@@ -6,6 +6,7 @@ import { useTableStore } from "~/store/tableStore";
 import { useEffect } from "react";
 import TableCard from "~/sections/table/Card";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const tables = await getTables(request);
@@ -16,9 +17,28 @@ export default function AdminTablesPage() {
   const loadTables = useLoaderData<TableType[]>();
 
   const { tables, setInitialTables, addTable } = useTableStore();
+  const [parents] = useAutoAnimate();
 
   useEffect(() => {
     setInitialTables(loadTables);
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Detecta Alt + T
+      if (event.altKey && event.key === "t") {
+        event.preventDefault(); // Evita conflictos
+        addTable(); // Ejecuta la función
+      }
+    };
+
+    // Agrega el listener al documento
+    document.addEventListener("keydown", handleKeyDown);
+
+    // Limpia el listener cuando el componente se desmonta
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
   return (
@@ -30,11 +50,12 @@ export default function AdminTablesPage() {
         <button
           className="rounded-lg bg-accent-500 px-4 py-2 text-sm font-medium text-white hover:bg-accent-600"
           onClick={addTable}
+          title="Crear nueva mesa (Alt + T)"
         >
           <Icon icon="tabler:table-plus" width="24" height="24" />
         </button>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4" ref={parents}>
         {tables.map((table) => (
           <TableCard key={table.id} table={table} />
         ))}

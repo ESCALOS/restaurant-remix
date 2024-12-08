@@ -6,7 +6,7 @@ import { useCategoryStore } from "~/store/categoryStore";
 import { Category as CategoryType } from "types";
 import { useLoadingStore } from "~/store/loadingStore";
 import { motion } from "framer-motion";
-import { useErrorAnimation } from "~/hooks/useErrorAnimation";
+import { useAnimateFeedbackCard } from "~/hooks/useAnimateFeedbackCard";
 
 interface CategoryCardProps {
   category: CategoryType & { is_persistent: boolean };
@@ -22,8 +22,8 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
   const [isEditing, setIsEditing] = React.useState(!category.is_persistent);
   const [name, setName] = React.useState(category.name);
   const inputRef = useRef<HTMLInputElement>(null);
-  const setLoading = useLoadingStore((state) => state.setLoading);
-  const { controls, errorAnimation } = useErrorAnimation();
+  const withLoading = useLoadingStore((state) => state.withLoading);
+  const { controls, animate } = useAnimateFeedbackCard();
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -38,9 +38,9 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
   useEffect(() => {
     if (fetcher.data) {
       if (fetcher.data.error) {
-        toast.warning(fetcher.data.error);
+        toast.error(fetcher.data.error);
+        animate("error");
         inputRef.current?.focus(); // Autofocus al input
-        errorAnimation();
         return;
       }
       if (fetcher.data.category) {
@@ -49,11 +49,19 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
           category.id
         );
         toast.success(fetcher.data.message);
+        animate("success");
         setIsEditing(false);
         return;
       }
+
+      if (fetcher.data.message) {
+        toast.success(fetcher.data.message); // Mensaje del servidor
+        animate("success");
+        deleteCategory(category.id); // Elimina del estado global
+        return;
+      }
     }
-  }, [fetcher.data, updateCategory]);
+  }, [fetcher.data]);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Escape") {
@@ -66,35 +74,37 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
 
   const handleSave = async () => {
     if (name.trim() === "") {
-      toast.error("El nombre de la categoría no puede estar vacío");
-      await errorAnimation();
+      toast.warning("El nombre de la categoría no puede estar vacío");
+      animate("error");
       return;
     }
 
-    const action = !category.is_persistent
-      ? "/admin/categories/create"
-      : `/admin/categories/${category.id}/edit`;
-
-    setLoading(true);
-    await fetcher.submit({ name }, { method: "post", action });
-    setLoading(false);
+    //Verificar si el nombre ha cambiado
+    if (category.name !== name) {
+      const action = !category.is_persistent
+        ? "/admin/categories/create"
+        : `/admin/categories/${category.id}/edit`;
+      await withLoading(async () => {
+        await fetcher.submit({ name }, { method: "post", action });
+      });
+    } else {
+      setIsEditing(false);
+    }
   };
 
   const handleDelete = async () => {
-    setLoading(true);
-    await fetcher.submit(null, {
-      method: "delete",
-      action: `/admin/categories/${category.id}/destroy`,
+    await withLoading(async () => {
+      await fetcher.submit(null, {
+        method: "post",
+        action: `/admin/categories/${category.id}/destroy`,
+      });
     });
-    setLoading(false);
-    deleteCategory(category.id);
   };
 
   return (
     <motion.div
       animate={controls}
       className="p-4 border rounded shadow hover:shadow-md transition select-none"
-      onDoubleClick={() => setIsEditing(true)}
     >
       <div className="flex items-center justify-between">
         {isEditing ? (
@@ -114,7 +124,10 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
             />
           </form>
         ) : (
-          <span className="text-lg font-medium text-primary-900">
+          <span
+            className="text-lg font-medium text-primary-900"
+            onDoubleClick={() => setIsEditing(true)}
+          >
             {category.name || "Nueva Categoría"}
           </span>
         )}

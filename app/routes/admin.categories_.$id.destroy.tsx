@@ -13,15 +13,9 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   try {
     await deleteCategory(request, parseInt(id));
-    console.log("Categoría eliminada");
 
-    return Response.json(
-      { message: "Categoría eliminada exitosamente" },
-      { status: 200 }
-    );
+    return Response.json({ message: "Categoría eliminada exitosamente" });
   } catch (error) {
-    console.log(error);
-
     const errorMessage =
       error instanceof Error ? error.message : "Error desconocido";
     return Response.json({ error: errorMessage }, { status: 500 });

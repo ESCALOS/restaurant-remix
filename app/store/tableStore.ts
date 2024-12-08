@@ -40,7 +40,6 @@ export const useTableStore = create<TableStore>((set) => ({
       tables: state.tables.map((table) =>
         table.id === oldId ? { ...updatedTable } : table
       ),
-      lastId: updatedTable.id > state.lastId ? updatedTable.id : state.lastId,
     })),
   deleteTable: (id) =>
     set((state) => ({

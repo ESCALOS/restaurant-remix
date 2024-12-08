@@ -23,6 +23,24 @@ export default function AdminCategoriesPage() {
     setInitialCategories(loadCategories);
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Detecta Alt + T
+      if (event.altKey && event.key === "t") {
+        event.preventDefault(); // Evita conflictos
+        addCategory(); // Ejecuta la función
+      }
+    };
+
+    // Agrega el listener al documento
+    document.addEventListener("keydown", handleKeyDown);
+
+    // Limpia el listener cuando el componente se desmonta
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   return (
     <div className="rounded-lg bg-white p-6 shadow-md">
       <div className="mb-6 flex items-center justify-between">
