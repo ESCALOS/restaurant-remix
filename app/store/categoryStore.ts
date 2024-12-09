@@ -15,31 +15,41 @@ interface CategoryStore {
 export const useCategoryStore = create<CategoryStore>((set) => ({
   categories: [],
   lastId: 0,
-  setInitialCategories: (initialCategorys) =>
+  setInitialCategories: (initialCategories) =>
     set({
-      categories: initialCategorys.map((category) => ({
-        ...category,
-        is_persistent: true, // Marcar tablas iniciales como persistentes
-      })),
+      categories: initialCategories
+        .map((category) => ({
+          ...category,
+          is_persistent: true, // Marcar tablas iniciales como persistentes
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name)),
     }),
   addCategory: () =>
-    set((state) => ({
-      categories: [
-        {
-          id: state.lastId - 1,
-          name: "",
-          is_persistent: false, // Nueva tabla no es persistente inicialmente
-        },
-        ...state.categories,
-      ],
-      lastId: state.lastId - 1,
-    })),
+    set((state) => {
+      const newCategory = {
+        id: state.lastId - 1,
+        name: "",
+        is_persistent: false, // Nueva tabla no es persistente inicialmente
+      };
+      const updatedCategories = [newCategory, ...state.categories].sort(
+        (a, b) => a.name.localeCompare(b.name)
+      );
+      return {
+        categories: updatedCategories,
+        lastId: state.lastId - 1,
+      };
+    }),
   updateCategory: (updatedCategory, oldId) =>
-    set((state) => ({
-      categories: state.categories.map((category) =>
-        category.id === oldId ? { ...updatedCategory } : category
-      ),
-    })),
+    set((state) => {
+      const updatedCategories = state.categories
+        .map((category) =>
+          category.id === oldId ? { ...updatedCategory } : category
+        )
+        .sort((a, b) => a.name.localeCompare(b.name));
+      return {
+        categories: updatedCategories,
+      };
+    }),
   deleteCategory: (id) =>
     set((state) => ({
       categories: state.categories.filter((category) => category.id !== id),

@@ -17,30 +17,38 @@ export const useTableStore = create<TableStore>((set) => ({
   lastId: 0,
   setInitialTables: (initialTables) =>
     set({
-      tables: initialTables.map((table) => ({
-        ...table,
-        is_persistent: true, // Marcar tablas iniciales como persistentes
-      })),
+      tables: initialTables
+        .map((table) => ({
+          ...table,
+          is_persistent: true, // Marcar tablas iniciales como persistentes
+        }))
+        .sort((a, b) => a.number.localeCompare(b.number)), // Ordenar por el atributo `number`
     }),
   addTable: () =>
-    set((state) => ({
-      tables: [
-        {
-          id: state.lastId - 1,
-          number: "",
-          is_available: false,
-          is_persistent: false, // Nueva tabla no es persistente inicialmente
-        },
-        ...state.tables,
-      ],
-      lastId: state.lastId - 1,
-    })),
+    set((state) => {
+      const newTable = {
+        id: state.lastId - 1,
+        number: "",
+        is_available: false,
+        is_persistent: false, // Nueva tabla no es persistente inicialmente
+      };
+      const updatedTables = [newTable, ...state.tables].sort((a, b) =>
+        a.number.localeCompare(b.number)
+      ); // Ordenar después de agregar
+      return {
+        tables: updatedTables,
+        lastId: state.lastId - 1,
+      };
+    }),
   updateTable: (updatedTable, oldId) =>
-    set((state) => ({
-      tables: state.tables.map((table) =>
-        table.id === oldId ? { ...updatedTable } : table
-      ),
-    })),
+    set((state) => {
+      const updatedTables = state.tables
+        .map((table) => (table.id === oldId ? { ...updatedTable } : table))
+        .sort((a, b) => a.number.localeCompare(b.number)); // Ordenar después de actualizar
+      return {
+        tables: updatedTables,
+      };
+    }),
   deleteTable: (id) =>
     set((state) => ({
       tables: state.tables.filter((table) => table.id !== id),
