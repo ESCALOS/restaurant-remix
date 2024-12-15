@@ -6,6 +6,7 @@ import {
   ScrollRestoration,
   useNavigation,
 } from "@remix-run/react";
+import {NextUIProvider} from "@nextui-org/react";
 import { Toaster } from "sonner";
 import { useLoadingStore } from "./store/loadingStore"; // Importa el store de zustand
 
@@ -55,12 +56,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="bg-secondary-900 text-primary-100 relative">
-        <Toaster richColors position="top-center" />
-        {isLoading && <LoadingSpinner />}{" "}
-        {/* Muestra el LoadingSpinner solo cuando isLoading es true */}
-        {children}
-        <ScrollRestoration />
-        <Scripts />
+        <NextUIProvider>
+          <Toaster richColors position="top-center" />
+          {isLoading && <LoadingSpinner />}{" "}
+          {/* Muestra el LoadingSpinner solo cuando isLoading es true */}
+          {children}
+          <ScrollRestoration />
+          <Scripts />
+        </NextUIProvider>
       </body>
     </html>
   );

@@ -43,3 +43,28 @@ export interface Dish {
   price: number;
   category: Category;
 }
+
+// Order Types
+export interface Order {
+  id: number;
+  user: User;
+  table: Table;
+  paid: boolean;
+  total_amount: number;
+  created_at: string;
+  updated_at: string;
+  details: { product_id: number; quantity: number }[];
+}
+
+export interface details {
+  id: number;
+  product: Product;
+  quantity: number;
+}
+
+export interface OrderItem {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+}

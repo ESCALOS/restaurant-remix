@@ -10,6 +10,7 @@ const navItems = [
   { name: "Platos", path: "/admin/dishes", icon: "mdi:food-fork-drink" },
   { name: "Kardex", path: "/admin/kardex", icon: "mdi:cart-arrow-down" },
   { name: "Reportes", path: "/admin/reports", icon: "mdi:chart-bar" },
+  { name: "Ordenes", path: "/waiter/orders", icon: "mdi:clipboard-list" },
 ];
 
 interface SidebarProps {
