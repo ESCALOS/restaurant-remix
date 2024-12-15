@@ -50,9 +50,9 @@ export const updateOrder = async (
     product_id: number,
     quantity: number
 ): Promise<void> => {
-    return await fetchWithAuth<void>(request, `/orders/${id}/products/${product_id}`, {
+    /* console.log("updateOrder-service", id, product_id, quantity); */
+    return await fetchWithAuth<void>(request, `/orders/${id}/products/${product_id}?quantity=${quantity}`, {
         method: "PUT",
-        body: JSON.stringify({ quantity }),
     });
 };
 

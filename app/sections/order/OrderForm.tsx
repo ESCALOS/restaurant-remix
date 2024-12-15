@@ -17,20 +17,19 @@ interface OrderFormProps {
 const OrderForm: React.FC<OrderFormProps> = ({ table, products, categories, existingOrder }) => {
     const [orderItems, setOrderItems] = useState<OrderItem[]>(() => {
         if (existingOrder) {
-            return existingOrder.details.map(detail => {
-                const product = products.find(p => p.id === detail.product_id);
-                return {
-                    id: detail.product_id,
-                    name: product?.name || '',
-                    price: product?.price || 0,
-                    quantity: detail.quantity
-                };
-            });
+            return existingOrder.details.map(detail => ({
+                id: detail.id,
+                product: detail.product,
+                name: detail.product.name,
+                unit_price: detail.unit_price,
+                quantity: detail.quantity
+            }));
         }
         return [];
     });
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
+    const [totalPrice, setTotalPrice] = useState(existingOrder ? existingOrder.total_amount : 0);
     const fetcher = useFetcher<{ error: string; status: number }>();
     const isSubmitting = fetcher.state === "submitting";
     const navigate = useNavigate();
@@ -46,6 +45,12 @@ const OrderForm: React.FC<OrderFormProps> = ({ table, products, categories, exis
         }
     }, [fetcher.data, navigate]);
 
+    useEffect(() => {
+        const newTotalPrice = orderItems.reduce((sum, item) => sum + item.unit_price * item.quantity, 0);
+        console.log(newTotalPrice, orderItems);
+        setTotalPrice(isNaN(newTotalPrice) ? 0 : newTotalPrice);
+    }, [orderItems]);
+
     const filteredItems = useMemo(() => {
         return products.filter(item => {
             const matchesCategory = selectedCategory === 'all' || item.category.name === selectedCategory;
@@ -60,7 +65,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ table, products, categories, exis
             if (existingItem) {
                 return prev.map(i => i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i);
             } else {
-                return [...prev, { ...item, quantity: 1 }];
+                return [...prev, { ...item, quantity: 1, product: item, unit_price: item.price }];
             }
         });
     };
@@ -77,7 +82,6 @@ const OrderForm: React.FC<OrderFormProps> = ({ table, products, categories, exis
         }
     };
 
-    const totalPrice = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const totalItems = orderItems.reduce((sum, item) => sum + item.quantity, 0);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -89,7 +93,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ table, products, categories, exis
             id: item.id,
             name: item.name,
             quantity: item.quantity,
-            price: item.price
+            price: item.unit_price
         }))));
 
         fetcher.submit(formData, { method: existingOrder ? "put" : "post" });
@@ -105,7 +109,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ table, products, categories, exis
                         <div key={item.id} className="flex items-center justify-between">
                             <div className="flex-1">
                                 <h4 className="font-medium">{item.name}</h4>
-                                <p className="text-sm text-muted-foreground">${item.price}</p>
+                                <p className="text-sm text-muted-foreground">${item.unit_price}</p>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <Button
@@ -143,7 +147,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ table, products, categories, exis
     );
 
     return (
-        <>
+        <div className="">
             <h1 className="text-black text-xl mb-5">{existingOrder ? `Editar Orden para la Mesa ${table.id}` : `Crear Orden para la Mesa ${table.id}`}</h1>
             <div className="flex flex-col lg:flex-row lg:space-x-8">
                 <div className="lg:flex-1">
@@ -236,7 +240,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ table, products, categories, exis
                     </CardFooter>
                 </Card>
             </div>
-        </>
+        </div>
     );
 };
 

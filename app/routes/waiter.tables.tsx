@@ -38,17 +38,15 @@ export default function Waiter() {
   }, []);
 
   return (
-    <WaiterLayout>
-      <div className="rounded-lg bg-white p-6 shadow-md">
-        <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-primary-900">Ordenes Por Mesa</h1>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4" ref={parents}>
-          {tables.map((table) => (
-            <TableCard key={table.id} table={table} hideButtons isAvailable={table.is_available} />
-          ))}
-        </div>
+    <div className="rounded-lg bg-white p-6 shadow-md">
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-primary-900">Ordenes Por Mesa</h1>
       </div>
-    </WaiterLayout>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4" ref={parents}>
+        {tables.map((table) => (
+          <TableCard key={table.id} table={table} hideButtons isAvailable={table.is_available} />
+        ))}
+      </div>
+    </div>
   );
 }

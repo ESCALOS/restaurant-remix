@@ -17,7 +17,7 @@ const navItems = [
 
 export default function WaiterLayout({ children }: Props) {
     return (
-        <div className="min-h-screen bg-accent-100">
+        <div className="min-h-screen bg-accent-100 pb-16">
 
             <main className="pt-16 mx-10 md:mx-14 lg:mx-72">
                 {children}

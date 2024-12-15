@@ -39,22 +39,24 @@ export const action: ActionFunction = async ({ params, request }) => {
   
   const existingOrder = await getOrderByTable(request, tableId);
 
+  console.log("parsedData", parsedData);
+
   // Actualizar o eliminar productos según sea necesario
   for (const item of existingOrder.details) {
-    const updatedItem = parsedData.find((i: any) => i.id === item.product_id);
+    const updatedItem = parsedData.find((i: any) => i.id === item.product.id);
     if (updatedItem) {
-      await updateOrder(request, table.id, item.product_id, updatedItem.quantity);
+      await updateOrder(request, item.id, item.product.id, updatedItem.quantity);
     } else {
-      await deleteOrder(request, table.id, item.product_id);
+      await deleteOrder(request, item.id, item.product.id);
     }
   }
 
   // Agregar nuevos productos
   for (const item of parsedData) {
-    if (!existingOrder.details.find((i: any) => i.product_id === item.id)) {
-      await updateOrder(request, table.id, item.id, item.quantity);
+    if (item.product && !existingOrder.details.find((i: any) => i.product.id === item.id)) {
+        await updateOrder(request, item.id, item.product.id, item.quantity);
     }
-  }
+}
 
   return json({ message: "Order updated successfully" }, { status: 200 });
 };

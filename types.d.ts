@@ -53,7 +53,7 @@ export interface Order {
   total_amount: number;
   created_at: string;
   updated_at: string;
-  details: { product_id: number; quantity: number }[];
+  details: OrderItem[];
 }
 
 export interface details {
@@ -64,7 +64,8 @@ export interface details {
 
 export interface OrderItem {
   id: number;
+  product: Product;
   name: string;
-  price: number;
+  unit_price: number;
   quantity: number;
 }
