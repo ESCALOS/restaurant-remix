@@ -60,7 +60,6 @@ export default function Form({
       onSubmit={handleSubmit(onSubmit)}
       className="space-y-6 mx-auto bg-white p-6 rounded-lg shadow-lg max-w-2xl"
     >
-      {" "}
       <div className="flex items-center gap-2">
         <Link
           to="/admin/products"

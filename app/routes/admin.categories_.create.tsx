@@ -30,7 +30,6 @@ export const action: ActionFunction = async ({ request }) => {
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Error desconocido";
-    console.log("Error al crear la mesa", error);
 
     return Response.json({ error: errorMessage }, { status: 500 });
   }

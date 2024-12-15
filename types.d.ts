@@ -43,3 +43,18 @@ export interface Dish {
   price: number;
   category: Category;
 }
+
+export interface Kardex {
+  id: number;
+  product: {
+    id: number;
+    name: string;
+  };
+  quantity: number;
+  user: {
+    id: number;
+    name: string;
+  };
+  movement_type: "INPUT" | "OUTPUT";
+  reason: string;
+}
