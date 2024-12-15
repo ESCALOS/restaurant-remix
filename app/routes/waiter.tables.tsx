@@ -1,5 +1,5 @@
 import { LoaderFunction, redirect } from "@remix-run/node";
-import { Outlet, useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import { getSession } from "~/session.server";
 import { getRedirectPath } from "~/utils/auth.server";
 import { getTables } from "~/services/TableService";
@@ -24,13 +24,29 @@ export const loader: LoaderFunction = async ({ request }) => {
     return redirect(redirectPath);
   }
 
-  return Response.json({});
+  const tables = await getTables(request);
+  return Response.json(tables);
 };
 
 export default function Waiter() {
+  const loadTables = useLoaderData<TableType[]>();
+  const { tables, setInitialTables } = useTableStore();
+  const [parents] = useAutoAnimate();
+
+  useEffect(() => {
+    setInitialTables(loadTables);
+  }, []);
+
   return (
-    <WaiterLayout>
-      <Outlet />
-    </WaiterLayout>
+    <div className="rounded-lg bg-white p-6 shadow-md">
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-primary-900">Ordenes Por Mesa</h1>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4" ref={parents}>
+        {tables.map((table) => (
+          <TableCard key={table.id} table={table} hideButtons isAvailable={table.is_available} />
+        ))}
+      </div>
+    </div>
   );
 }

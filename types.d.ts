@@ -44,6 +44,32 @@ export interface Dish {
   category: Category;
 }
 
+<
+// Order Types
+export interface Order {
+  id: number;
+  user: User;
+  table: Table;
+  paid: boolean;
+  total_amount: number;
+  created_at: string;
+  updated_at: string;
+  details: OrderItem[];
+}
+
+export interface details {
+  id: number;
+  product: Product;
+  quantity: number;
+}
+
+export interface OrderItem {
+  id: number;
+  product: Product;
+  name: string;
+  unit_price: number;
+  quantity: number;
+}
 export interface Kardex {
   id: number;
   product: {
