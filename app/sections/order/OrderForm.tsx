@@ -5,16 +5,30 @@ import { Input } from "@nextui-org/input";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import { Icon } from '@iconify/react/dist/iconify.js';
-import { Category, OrderItem, Product, Table } from "types";
+import { Category, Order, OrderItem, Product, Table } from "types";
 
 interface OrderFormProps {
     table: Table;
     products: Array<Product>;
     categories: Array<Category>;
+    existingOrder?: Order; // Nueva propiedad para la orden existente
 }
 
-const OrderForm: React.FC<OrderFormProps> = ({ table, products, categories }) => {
-    const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
+const OrderForm: React.FC<OrderFormProps> = ({ table, products, categories, existingOrder }) => {
+    const [orderItems, setOrderItems] = useState<OrderItem[]>(() => {
+        if (existingOrder) {
+            return existingOrder.details.map(detail => {
+                const product = products.find(p => p.id === detail.product_id);
+                return {
+                    id: detail.product_id,
+                    name: product?.name || '',
+                    price: product?.price || 0,
+                    quantity: detail.quantity
+                };
+            });
+        }
+        return [];
+    });
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const fetcher = useFetcher<{ error: string; status: number }>();
@@ -26,7 +40,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ table, products, categories }) =>
             if (fetcher.data.error) {
                 toast.error(fetcher.data.error);
             } else {
-                toast.success("Orden creada exitosamente");
+                toast.success("Orden actualizada exitosamente");
                 navigate("/waiter/tables");
             }
         }
@@ -78,7 +92,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ table, products, categories }) =>
             price: item.price
         }))));
 
-        fetcher.submit(formData, { method: "post" });
+        fetcher.submit(formData, { method: existingOrder ? "put" : "post" });
     };
 
     const OrderSummary = () => (
@@ -130,7 +144,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ table, products, categories }) =>
 
     return (
         <>
-            <h1 className="text-black text-xl mb-5">Crear Orden para la Mesa {table.id}</h1>
+            <h1 className="text-black text-xl mb-5">{existingOrder ? `Editar Orden para la Mesa ${table.id}` : `Crear Orden para la Mesa ${table.id}`}</h1>
             <div className="flex flex-col lg:flex-row lg:space-x-8">
                 <div className="lg:flex-1">
                     <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-6">

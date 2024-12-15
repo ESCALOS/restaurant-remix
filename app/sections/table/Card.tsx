@@ -67,6 +67,8 @@ const TableCard: React.FC<TableCardProps> = ({ table, hideButtons = false, isAva
   const handleTableClick = () => {
     if (isAvailable && hideButtons) {
       navigate(`/waiter/orders/create/${table.id}`);
+    } else if (!isAvailable && hideButtons) {
+      navigate(`/waiter/orders/edit/${table.id}`);
     }
   };
 

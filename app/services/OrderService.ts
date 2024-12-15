@@ -78,3 +78,4 @@ export const getOrderByTable = async (
 ): Promise<Order> => {
     return await fetchWithAuth<Order>(request, `/orders/table/${tableNumber}`);
 };
+
