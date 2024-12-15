@@ -44,6 +44,7 @@ export interface Dish {
   category: Category;
 }
 
+<
 // Order Types
 export interface Order {
   id: number;
@@ -68,4 +69,18 @@ export interface OrderItem {
   name: string;
   unit_price: number;
   quantity: number;
+}
+export interface Kardex {
+  id: number;
+  product: {
+    id: number;
+    name: string;
+  };
+  quantity: number;
+  user: {
+    id: number;
+    name: string;
+  };
+  movement_type: "INPUT" | "OUTPUT";
+  reason: string;
 }

@@ -1,15 +1,15 @@
 import { ActionFunctionArgs } from "@remix-run/node";
 import invariant from "tiny-invariant";
-import { deleteProduct } from "~/services/ProductService";
+import { deleteKardex } from "~/services/KardexService";
 
 export const action = async ({ params, request }: ActionFunctionArgs) => {
-  invariant(params.id, "No se ha proporcionado el id de la producto");
-  const productId = params.id;
+  invariant(params.id, "No se ha proporcionado el id de la kardex");
+  const kardexId = params.id;
 
   try {
-    await deleteProduct(request, productId);
+    await deleteKardex(request, kardexId);
     return Response.json(
-      { message: "Producto eliminado exitosamente" },
+      { message: "Kardex eliminado exitosamente" },
       { status: 200 }
     );
   } catch (error) {
